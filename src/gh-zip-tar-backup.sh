@@ -22,6 +22,8 @@ do
   # If the repository has a master or main default branch, download it as a zip archive.
   if [[ ! -z "$BRANCH" ]]; then
     echo "Downloading $repo as zip archive..."
+    # "https://api.github.com/repos/OWNER/REPO/tarball/REF" is the api link for *.tar archives
+    # curl -sL -H "Authorization: token $TOKEN" "https://api.github.com/repos/$repo/tarball/$BRANCH" -o "$DIRECTORY/${repo##*/}.tar.gz"
     curl -sL -H "Authorization: token $TOKEN" "https://api.github.com/repos/$repo/zipball/$BRANCH" -o "$DIRECTORY/${repo##*/}.zip"
   fi
 done
