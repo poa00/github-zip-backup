@@ -1,7 +1,8 @@
 #!/usr/bin/env pwsh
+# TODO replace api calls with gh commands
 # File header specifies pwsh interpreter location for Linux and MacOS.
 
-# This PowerShell script saves zip file copies of private and public GitHub repos based on personal access token parameters.
+# This PowerShell script saves tar/zip file copies of private and public GitHub repos based on personal access token parameters.
 
 # GitHub API Documentation: 
 # https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#download-a-repository-archive-zip
@@ -27,18 +28,21 @@ $downloadCount = 0
 # Download zip files for each repository
 foreach ($repo in $repositories) {
     $name = $repo.name
-    # Builds zip uri with archive url, replacing the archive format with zipball and using branch name as reference
-    $zipUri = $repo.archive_url -replace '{archive_format}', 'zipball' -replace '{/ref}', "/$branchName"
-    $zipFilePath = "C:\path\to\directory\$($name).zip"
+    # Builds tar/zip uri with archive url, replacing the archive format with zipball and using branch name as reference
+    # For zip files
+    # $zipUri = $repo.archive_url -replace '{archive_format}', 'zipball' -replace '{/ref}', "/$branchName"
+    # $zipFilePath = "C:\path\to\directory\$($name).zip"
+    $tarUri = $repo.archive_url -replace '{archive_format}', 'zipball' -replace '{/ref}', "/$branchName"
+    $tarFilePath = '$(env:HOME)' + '$($name)'+ '.tar'
     Write-Host "Downloading $($name)"
 
-    # Download zip file, handling 404/download errors
+    # Download compressed file, handling 404/download errors
     try {
         try {
-            if (-not $zipUri) {
+            if (-not $tarUri) {    #zipUri for zip
                 throw "The archive URL is null or empty for repository $($repo.name)."
             }
-            Invoke-WebRequest -Uri $zipUri -Headers $headers -OutFile $zipFilePath
+            Invoke-WebRequest -Uri $tarUri -Headers $headers -OutFile $tarFilePath  #replace tar with zip
             $downloadCount++
         } catch {
             Write-Warning "Error downloading $($repo.name): $($_.Exception.Message)"
